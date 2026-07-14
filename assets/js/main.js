@@ -264,3 +264,17 @@ document.addEventListener('click', function(event) {
     }, 280);
   });
 })();
+
+
+(function(){
+  document.addEventListener('submit', function(event){
+    var form = event.target;
+    if (!form || !form.matches || !form.matches('form[data-formsubmit-form]')) return;
+
+    var nextInput = form.querySelector('input[name="_next"]');
+    var nextRel = form.getAttribute('data-next-url');
+    if (nextInput && nextRel) {
+      nextInput.value = new URL(nextRel, window.location.href).href;
+    }
+  });
+})();
