@@ -1840,3 +1840,37 @@ body:has(.subject-region-cta) .hero{
     display:none;
   }
 }
+
+
+/* ===== v24 fast region map page transition override ===== */
+.region-map-page{
+  opacity:1 !important;
+  animation:none !important;
+}
+.region-transition-layer{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  opacity:0;
+  background:rgba(246,250,255,.22);
+  backdrop-filter:none !important;
+  transform:none !important;
+  transition:opacity .14s ease !important;
+}
+.region-transition-active .region-transition-layer{
+  opacity:1;
+  backdrop-filter:none !important;
+  transform:none !important;
+}
+.region-transition-active.region-map-page main::before{
+  transition:transform .18s ease, opacity .14s ease, filter .14s ease !important;
+}
+.region-transition-active .card,
+.region-transition-active .town-list a{
+  opacity:1 !important;
+  transform:none !important;
+}
+@media (prefers-reduced-motion: reduce){
+  .region-transition-layer{display:none;}
+}

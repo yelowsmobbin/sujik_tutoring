@@ -261,7 +261,7 @@ document.addEventListener('click', function(event) {
 
     window.setTimeout(function(){
       window.location.href = href;
-    }, 280);
+    }, 120);
   });
 })();
 
@@ -270,8 +270,8 @@ document.addEventListener('click', function(event) {
   document.addEventListener('submit', function(event){
     var form = event.target;
     if (!form || !form.matches || !form.matches('form[data-formsubmit-form]')) return;
-
     var nextInput = form.querySelector('input[name="_next"]');
+    if (nextInput && nextInput.value && /^https?:\/\//i.test(nextInput.value)) return;
     var nextRel = form.getAttribute('data-next-url');
     if (nextInput && nextRel) {
       nextInput.value = new URL(nextRel, window.location.href).href;
@@ -318,7 +318,7 @@ document.addEventListener('click', function(event) {
     var href = link.getAttribute('href');
     window.setTimeout(function(){
       window.location.href = href;
-    }, 520);
+    }, 140);
   }, true);
 
   window.addEventListener('pageshow', function(){
