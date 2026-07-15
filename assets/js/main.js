@@ -84,6 +84,8 @@ document.addEventListener('click', function(event) {
 
 
 
+
+
 (function(){
   var reviewForm = document.getElementById('reviewForm');
   var reviewGrid = document.querySelector('.review-grid');
@@ -106,13 +108,14 @@ document.addEventListener('click', function(event) {
 
       var rawName = reviewForm.review_name ? reviewForm.review_name.value.trim() : '';
       var author = maskDisplayName(rawName);
-      var gradeInput = reviewForm.querySelector('input[name="grade"]:checked');
-      var subjectInput = reviewForm.querySelector('input[name="subject"]:checked');
+      var grade = reviewForm.grade ? reviewForm.grade.value : '';
+      var subject = reviewForm.subject ? reviewForm.subject.value : '';
       var ratingInput = reviewForm.querySelector('input[name="rating"]:checked');
+      var rating = ratingInput ? ratingInput.value : '';
       var content = reviewForm.content ? reviewForm.content.value.trim() : '';
 
-      if (!rawName || !gradeInput || !subjectInput || !ratingInput || !content) {
-        alert('공개 이름, 학년, 과목, 만족도, 후기 내용을 모두 입력해주세요.');
+      if (!rawName || !grade || !subject || !rating || !content) {
+        alert('공개 이름, 학년, 과목, 별점, 후기 내용을 모두 입력해주세요.');
         return;
       }
 
@@ -121,7 +124,7 @@ document.addEventListener('click', function(event) {
       card.setAttribute('data-review-page','1');
       card.innerHTML = '<div class="review-meta"><div><span class="review-author"></span><time class="review-date"></time></div><span class="review-tag"></span></div><p></p>';
       card.querySelector('.review-author').textContent = author;
-      card.querySelector('.review-tag').textContent = gradeInput.value + ' · ' + subjectInput.value + ' · ' + ratingInput.value;
+      card.querySelector('.review-tag').textContent = grade + ' · ' + subject + ' · ' + rating;
 
       var now = new Date();
       var formattedDate = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
@@ -135,6 +138,8 @@ document.addEventListener('click', function(event) {
     });
   }
 })();
+
+
 
 
 
