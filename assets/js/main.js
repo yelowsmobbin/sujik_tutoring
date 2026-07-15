@@ -83,33 +83,59 @@ document.addEventListener('click', function(event) {
 })();
 
 
+
 (function(){
   var reviewForm = document.getElementById('reviewForm');
   var reviewGrid = document.querySelector('.review-grid');
+
+  function maskDisplayName(name){
+    name = (name || '').trim();
+    if (!name) return '익명 후기';
+    var compact = name.replace(/\s+/g, '');
+    var koreanRealName = /^[가-힣]{2,4}$/.test(compact);
+    if (koreanRealName) {
+      if (compact.length === 2) return compact.charAt(0) + '*';
+      return compact.charAt(0) + '*' + compact.slice(2);
+    }
+    return name;
+  }
+
   if (reviewForm && reviewGrid) {
     reviewForm.addEventListener('submit', function(event){
       event.preventDefault();
-      var author = reviewForm.author.value.trim();
-      var type = reviewForm.type.value;
-      var content = reviewForm.content.value.trim();
-      if (!author || !content) return;
+
+      var rawName = reviewForm.review_name ? reviewForm.review_name.value.trim() : '';
+      var author = maskDisplayName(rawName);
+      var gradeInput = reviewForm.querySelector('input[name="grade"]:checked');
+      var subjectInput = reviewForm.querySelector('input[name="subject"]:checked');
+      var ratingInput = reviewForm.querySelector('input[name="rating"]:checked');
+      var content = reviewForm.content ? reviewForm.content.value.trim() : '';
+
+      if (!rawName || !gradeInput || !subjectInput || !ratingInput || !content) {
+        alert('공개 이름, 학년, 과목, 만족도, 후기 내용을 모두 입력해주세요.');
+        return;
+      }
+
       var card = document.createElement('article');
-      card.className = 'review-card is-visible';
+      card.className = 'review-card is-visible review-card-new';
       card.setAttribute('data-review-page','1');
       card.innerHTML = '<div class="review-meta"><div><span class="review-author"></span><time class="review-date"></time></div><span class="review-tag"></span></div><p></p>';
       card.querySelector('.review-author').textContent = author;
-      card.querySelector('.review-tag').textContent = type;
+      card.querySelector('.review-tag').textContent = gradeInput.value + ' · ' + subjectInput.value + ' · ' + ratingInput.value;
+
       var now = new Date();
       var formattedDate = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
       var timeEl = card.querySelector('.review-date');
       if (timeEl) { timeEl.textContent = formattedDate; timeEl.setAttribute('datetime', formattedDate.replace(/\./g,'-')); }
       card.querySelector('p').textContent = content;
+
       reviewGrid.prepend(card);
       reviewForm.reset();
       alert('후기가 등록되었습니다. 현재 페이지에서 바로 확인할 수 있습니다.');
     });
   }
 })();
+
 
 
 
@@ -227,18 +253,6 @@ document.addEventListener('click', function(event) {
 
 
 (function(){
-  if (!document.body.classList.contains('region-map-page')) return;
-  document.addEventListener('click', function(event){
-    var link = event.target.closest('a[href].map-zoom-link');
-    if (!link) return;
-    var href = link.getAttribute('href') || '';
-    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-    document.body.classList.add('map-zooming');
-  });
-})();
-
-
-(function(){
   document.addEventListener('submit', function(event){
     var form = event.target;
     if (!form || !form.matches || !form.matches('form[data-formsubmit-form]')) return;
@@ -254,19 +268,3 @@ document.addEventListener('click', function(event) {
 
 
 
-(function(){
-  if (!document.body.classList.contains('region-map-page')) return;
-  if (window.__sujikRegionInstantNav) return;
-  window.__sujikRegionInstantNav = true;
-
-  document.addEventListener('click', function(event){
-    var link = event.target.closest && event.target.closest('a[href]');
-    if (!link) return;
-    var href = link.getAttribute('href') || '';
-    if (!href || href.charAt(0) === '#' || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
-    if (!(link.classList.contains('map-zoom-link') || link.closest('.map-zoom-link') || link.closest('.town-list'))) return;
-
-    // No preventDefault here. Browser navigates immediately.
-    document.body.classList.add('map-zooming');
-  }, {capture:true, passive:true});
-})();

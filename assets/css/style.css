@@ -1911,3 +1911,150 @@ body:has(.subject-region-cta) .hero{
 @media (prefers-reduced-motion: reduce){
   .region-map-page main{animation:none !important;}
 }
+
+
+/* ===== v26 no map zoom + floaty region item entrance ===== */
+.region-map-page main::before{
+  transform:translate(-8%, -1%) scale(1) !important;
+  opacity:.18 !important;
+  transition:opacity .18s ease, filter .18s ease !important;
+}
+.region-map-page.map-level-country main::before,
+.region-map-page.map-level-province main::before,
+.region-map-page.map-level-area main::before,
+.region-map-page.map-zooming main::before,
+.region-map-page[class*="map-province-"] main::before{
+  transform:translate(-8%, -1%) scale(1) !important;
+  opacity:.18 !important;
+}
+.region-map-page main{
+  animation:none !important;
+}
+.region-transition-layer{
+  display:none !important;
+}
+.region-map-page .grid .card,
+.region-map-page .town-list a,
+.region-map-page .link-row .text-link,
+.region-map-page .contact-card,
+.region-map-page .hero .btn,
+.region-map-page .section .btn{
+  animation:sujikFloatIn .48s cubic-bezier(.18,1.18,.28,1) both;
+  will-change:transform, opacity;
+}
+.region-map-page .grid .card:nth-child(1), .region-map-page .town-list a:nth-child(1){animation-delay:.02s}
+.region-map-page .grid .card:nth-child(2), .region-map-page .town-list a:nth-child(2){animation-delay:.04s}
+.region-map-page .grid .card:nth-child(3), .region-map-page .town-list a:nth-child(3){animation-delay:.06s}
+.region-map-page .grid .card:nth-child(4), .region-map-page .town-list a:nth-child(4){animation-delay:.08s}
+.region-map-page .grid .card:nth-child(5), .region-map-page .town-list a:nth-child(5){animation-delay:.10s}
+.region-map-page .grid .card:nth-child(6), .region-map-page .town-list a:nth-child(6){animation-delay:.12s}
+.region-map-page .grid .card:nth-child(n+7), .region-map-page .town-list a:nth-child(n+7){animation-delay:.14s}
+.region-map-page .contact-card:nth-child(1){animation-delay:.06s}
+.region-map-page .contact-card:nth-child(2){animation-delay:.10s}
+.region-map-page .contact-card:nth-child(3){animation-delay:.14s}
+@keyframes sujikFloatIn{
+  0%{opacity:0; transform:translateY(18px) scale(.985);}
+  58%{opacity:1; transform:translateY(-4px) scale(1.006);}
+  100%{opacity:1; transform:translateY(0) scale(1);}
+}
+@media (prefers-reduced-motion: reduce){
+  .region-map-page .grid .card,
+  .region-map-page .town-list a,
+  .region-map-page .link-row .text-link,
+  .region-map-page .contact-card,
+  .region-map-page .hero .btn,
+  .region-map-page .section .btn{
+    animation:none !important;
+  }
+}
+
+
+/* ===== v27 mobile-friendly review name and choice chips ===== */
+.review-form label small.form-helper{
+  display:block;
+  margin-top:8px;
+  color:#6b7894;
+  font-size:.88rem;
+  line-height:1.45;
+}
+.review-choice-group{
+  margin:18px 0;
+}
+.review-choice-group > strong{
+  display:block;
+  margin-bottom:10px;
+  color:var(--navy);
+  font-size:.98rem;
+  letter-spacing:-.02em;
+}
+.review-choice-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.review-choice-row label{
+  display:inline-flex;
+  cursor:pointer;
+  user-select:none;
+}
+.review-choice-row input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.review-choice-row span{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  padding:10px 14px;
+  border:1px solid #dbe6fb;
+  border-radius:999px;
+  background:rgba(255,255,255,.92);
+  color:#243657;
+  font-weight:800;
+  font-size:.94rem;
+  box-shadow:0 8px 18px rgba(23,63,143,.055);
+  transition:transform .16s ease, box-shadow .16s ease, background .16s ease, border-color .16s ease, color .16s ease;
+}
+.review-choice-row input:checked + span{
+  background:linear-gradient(135deg,#173f8f,#2e6edb);
+  border-color:#173f8f;
+  color:#fff;
+  box-shadow:0 12px 24px rgba(46,110,219,.22);
+  transform:translateY(-1px);
+}
+.review-choice-row input:focus-visible + span{
+  outline:3px solid rgba(46,110,219,.25);
+  outline-offset:2px;
+}
+.review-rating-row span{
+  min-width:138px;
+}
+.review-card-new{
+  animation:reviewNewFloat .42s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes reviewNewFloat{
+  from{opacity:0; transform:translateY(16px) scale(.985);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+@media(max-width:768px){
+  .review-choice-row{
+    gap:7px;
+  }
+  .review-choice-row label{
+    flex:1 1 calc(33.333% - 7px);
+  }
+  .review-choice-row span{
+    width:100%;
+    min-height:44px;
+    padding:10px 8px;
+    font-size:.9rem;
+  }
+  .review-rating-row label{
+    flex:1 1 100%;
+  }
+  .review-rating-row span{
+    min-width:0;
+  }
+}
