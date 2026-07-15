@@ -239,34 +239,6 @@ document.addEventListener('click', function(event) {
 
 
 (function(){
-  if (!document.body.classList.contains('region-map-page')) return;
-
-  function shouldAnimate(link){
-    var href = link.getAttribute('href') || '';
-    if (!href || href.indexOf('#') === 0) return false;
-    if (/^(https?:|mailto:|tel:|javascript:)/i.test(href)) return false;
-    return link.classList.contains('map-zoom-link') || link.closest('.map-zoom-link');
-  }
-
-  document.addEventListener('click', function(event){
-    var link = event.target.closest('a[href]');
-    if (!link || !shouldAnimate(link)) return;
-
-    var href = link.getAttribute('href');
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target === '_blank') return;
-
-    event.preventDefault();
-    document.body.classList.add('map-zooming');
-    document.documentElement.classList.add('page-soft-leaving');
-
-    window.setTimeout(function(){
-      window.location.href = href;
-    }, 120);
-  });
-})();
-
-
-(function(){
   document.addEventListener('submit', function(event){
     var form = event.target;
     if (!form || !form.matches || !form.matches('form[data-formsubmit-form]')) return;
@@ -280,48 +252,21 @@ document.addEventListener('click', function(event) {
 })();
 
 
+
+
 (function(){
   if (!document.body.classList.contains('region-map-page')) return;
-  if (window.__sujikRegionSmoothTransition) return;
-  window.__sujikRegionSmoothTransition = true;
-
-  var layer = document.createElement('div');
-  layer.className = 'region-transition-layer';
-  layer.setAttribute('aria-hidden', 'true');
-  document.body.appendChild(layer);
-
-  function isLocalRegionLink(link){
-    if (!link) return false;
-    var href = link.getAttribute('href') || '';
-    if (!href || href.charAt(0) === '#') return false;
-    if (/^(https?:|mailto:|tel:|javascript:)/i.test(href)) return false;
-    if (link.target === '_blank') return false;
-    return !!(link.classList.contains('map-zoom-link') || link.closest('.map-zoom-link') || link.closest('.town-list'));
-  }
+  if (window.__sujikRegionInstantNav) return;
+  window.__sujikRegionInstantNav = true;
 
   document.addEventListener('click', function(event){
     var link = event.target.closest && event.target.closest('a[href]');
-    if (!isLocalRegionLink(link)) return;
-    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (!href || href.charAt(0) === '#' || /^(https?:|mailto:|tel:|javascript:)/i.test(href)) return;
+    if (!(link.classList.contains('map-zoom-link') || link.closest('.map-zoom-link') || link.closest('.town-list'))) return;
 
-    event.preventDefault();
-
-    var rect = link.getBoundingClientRect();
-    var x = rect.left + rect.width / 2;
-    var y = rect.top + rect.height / 2;
-    document.documentElement.style.setProperty('--region-click-x', x + 'px');
-    document.documentElement.style.setProperty('--region-click-y', y + 'px');
-
+    // No preventDefault here. Browser navigates immediately.
     document.body.classList.add('map-zooming');
-    document.body.classList.add('region-transition-active');
-
-    var href = link.getAttribute('href');
-    window.setTimeout(function(){
-      window.location.href = href;
-    }, 140);
-  }, true);
-
-  window.addEventListener('pageshow', function(){
-    document.body.classList.remove('region-transition-active');
-  });
+  }, {capture:true, passive:true});
 })();

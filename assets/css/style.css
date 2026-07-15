@@ -1874,3 +1874,40 @@ body:has(.subject-region-cta) .hero{
 @media (prefers-reduced-motion: reduce){
   .region-transition-layer{display:none;}
 }
+
+
+/* ===== v25 instant region navigation: no artificial loading delay ===== */
+.region-map-page{
+  opacity:1 !important;
+  animation:none !important;
+}
+.region-map-page main::before{
+  transition:transform .14s ease, opacity .14s ease, filter .14s ease !important;
+}
+.region-transition-layer{
+  display:none !important;
+}
+.region-transition-active,
+.region-transition-active .card,
+.region-transition-active .town-list a{
+  opacity:1 !important;
+  transform:none !important;
+  filter:none !important;
+}
+.region-transition-active.region-map-page main::before{
+  transition:transform .14s ease, opacity .14s ease !important;
+}
+.region-map-page .card,
+.region-map-page .town-list a{
+  will-change:auto !important;
+}
+@keyframes sujikQuickAppear{
+  from{opacity:.96;}
+  to{opacity:1;}
+}
+.region-map-page main{
+  animation:sujikQuickAppear .08s ease-out both;
+}
+@media (prefers-reduced-motion: reduce){
+  .region-map-page main{animation:none !important;}
+}
