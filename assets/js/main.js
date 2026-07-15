@@ -122,9 +122,11 @@ document.addEventListener('click', function(event) {
       var card = document.createElement('article');
       card.className = 'review-card is-visible review-card-new';
       card.setAttribute('data-review-page','1');
-      card.innerHTML = '<div class="review-meta"><div><span class="review-author"></span><time class="review-date"></time></div><span class="review-tag"></span></div><p></p>';
+      card.innerHTML = '<div class="review-meta"><div><span class="review-author"></span><time class="review-date"></time></div><span class="review-tag"></span><span class="review-card-rating"></span></div><p></p>';
       card.querySelector('.review-author').textContent = author;
-      card.querySelector('.review-tag').textContent = grade + ' · ' + subject + ' · ' + rating;
+      card.querySelector('.review-tag').textContent = grade + ' · ' + subject;
+      var ratingBadge = card.querySelector('.review-card-rating');
+      if (ratingBadge) { ratingBadge.textContent = rating.replace(/\s.*$/, '') + ' 5'; ratingBadge.setAttribute('aria-label', '별점 ' + rating); }
 
       var now = new Date();
       var formattedDate = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
