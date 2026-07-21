@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>수직과외 전화·카톡·상담신청 안내</title><meta content="전화상담, 카톡상담, 상담신청 버튼과 상담 준비할 정보를 안내하는 안내입니다." name="description"/><link href="https://example.github.io/sujik-tutor/consultation/index.html" rel="canonical"/><meta content="website" property="og:type"/><meta content="수직과외" property="og:site_name"/><meta content="수직과외 전화·카톡·상담신청 안내" property="og:title"/><meta content="전화상담, 카톡상담, 상담신청 버튼과 상담 준비할 정보를 안내하는 안내입니다." property="og:description"/><meta content="https://example.github.io/sujik-tutor/consultation/index.html" property="og:url"/><meta content="summary" name="twitter:card"/><link href="../../assets/css/style.css" rel="stylesheet"/>  <div class="side-consult" aria-label="빠른 상담 버튼"><button class="side-btn phone-side" type="button" onclick="openPhoneConsult()">📞<span>전화상담</span></button><button class="side-btn kakao-side" type="button" onclick="openKakaoConsult()">🗨️<span>카톡상담</span></button><button class="side-btn apply-side" type="button" onclick="openLanding()">📖<span>상담신청</span></button></div>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1" name="viewport"/><title>수직과외 전화·카톡·상담신청 안내</title><meta content="전화상담, 카톡상담, 상담신청 버튼과 상담 준비할 정보를 안내하는 안내입니다." name="description"/><link href="https://sujiktutor.com/consultation/form/" rel="canonical"/><meta content="website" property="og:type"/><meta content="수직과외" property="og:site_name"/><meta content="수직과외 전화·카톡·상담신청 안내" property="og:title"/><meta content="전화상담, 카톡상담, 상담신청 버튼과 상담 준비할 정보를 안내하는 안내입니다." property="og:description"/><meta content="https://sujiktutor.com/consultation/form/" property="og:url"/><meta content="summary" name="twitter:card"/><link href="../../assets/css/style.css" rel="stylesheet"/>  <div class="side-consult" aria-label="빠른 상담 버튼"><button class="side-btn phone-side" type="button" onclick="openPhoneConsult()">📞<span>전화상담</span></button><button class="side-btn kakao-side" type="button" onclick="openKakaoConsult()">🗨️<span>카톡상담</span></button><button class="side-btn apply-side" type="button" onclick="openLanding()">📖<span>상담신청</span></button></div>
 <script>document.documentElement.classList.add("js")</script>
 </head><body><a class="skip" href="#main">본문 바로가기</a><header class="site-header">
   <div class="container header-inner">
@@ -58,7 +58,7 @@
   </section>
   <section class="section form-section">
     <div class="container">
-      <form class="request-form" action="https://formsubmit.co/sqsq1458@naver.com" method="POST" accept-charset="UTF-8">
+      <form class="request-form" action="https://formsubmit.co/sqsq1458@naver.com" method="POST" data-formsubmit-form data-next-url="../thanks/index.html" accept-charset="UTF-8">
 
         <input type="hidden" name="_subject" value="[수직과외] 상담신청이 도착했습니다">
         <input type="hidden" name="_template" value="table">
@@ -98,4 +98,36 @@
   </div>
 </footer>
 <script src="../../assets/js/main.js"></script>
+<script>
+(function () {
+  var form = document.querySelector('form[action*="formsubmit.co"]');
+  if (!form || form.dataset.redirectFixed === 'true') return;
+  form.dataset.redirectFixed = 'true';
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    var submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.dataset.originalText = submitButton.textContent || submitButton.value || '';
+      if (submitButton.tagName === 'BUTTON') submitButton.textContent = '신청 전송 중...';
+      else submitButton.value = '신청 전송 중...';
+    }
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function () {
+      window.location.href = '../thanks/index.html';
+    })
+    .catch(function () {
+      window.location.href = '../thanks/index.html';
+    });
+  });
+})();
+</script>
+
 </body></html>
