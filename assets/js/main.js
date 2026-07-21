@@ -86,13 +86,14 @@ document.addEventListener('click', function(event) {
 
 
 
+
 (function(){
   var reviewForm = document.getElementById('reviewForm');
   var reviewGrid = document.querySelector('.review-grid');
 
   function maskDisplayName(name){
     name = (name || '').trim();
-    if (!name) return '익명 후기';
+    if (!name) return '';
     var compact = name.replace(/\s+/g, '');
     var koreanRealName = /^[가-힣]{2,4}$/.test(compact);
     if (koreanRealName) {
@@ -102,22 +103,32 @@ document.addEventListener('click', function(event) {
     return name;
   }
 
+  function ratingNumber(rating){
+    if (rating.indexOf('5점') !== -1) return '5';
+    if (rating.indexOf('4점') !== -1) return '4';
+    if (rating.indexOf('3점') !== -1) return '3';
+    if (rating.indexOf('2점') !== -1) return '2';
+    return '1';
+  }
+
   if (reviewForm && reviewGrid) {
     reviewForm.addEventListener('submit', function(event){
       event.preventDefault();
 
       var rawName = reviewForm.review_name ? reviewForm.review_name.value.trim() : '';
-      var author = maskDisplayName(rawName);
       var grade = reviewForm.grade ? reviewForm.grade.value : '';
       var subject = reviewForm.subject ? reviewForm.subject.value : '';
       var ratingInput = reviewForm.querySelector('input[name="rating"]:checked');
       var rating = ratingInput ? ratingInput.value : '';
       var content = reviewForm.content ? reviewForm.content.value.trim() : '';
 
-      if (!rawName || !grade || !subject || !rating || !content) {
-        alert('공개 이름, 학년, 과목, 별점, 후기 내용을 모두 입력해주세요.');
+      if (!grade || !subject || !rating || !content) {
+        alert('학년, 과목, 별점, 후기 내용을 입력해주세요.');
         return;
       }
+
+      var author = maskDisplayName(rawName);
+      if (!author) author = grade + '/' + subject;
 
       var card = document.createElement('article');
       card.className = 'review-card is-visible review-card-new';
@@ -126,7 +137,10 @@ document.addEventListener('click', function(event) {
       card.querySelector('.review-author').textContent = author;
       card.querySelector('.review-tag').textContent = grade + ' · ' + subject;
       var ratingBadge = card.querySelector('.review-card-rating');
-      if (ratingBadge) { ratingBadge.textContent = rating.replace(/\s.*$/, '') + ' 5'; ratingBadge.setAttribute('aria-label', '별점 ' + rating); }
+      if (ratingBadge) {
+        ratingBadge.textContent = rating.replace(/\s.*$/, '') + ' ' + ratingNumber(rating);
+        ratingBadge.setAttribute('aria-label', '별점 ' + ratingNumber(rating) + '점');
+      }
 
       var now = new Date();
       var formattedDate = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
@@ -140,6 +154,7 @@ document.addEventListener('click', function(event) {
     });
   }
 })();
+
 
 
 
