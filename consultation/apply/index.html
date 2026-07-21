@@ -97,4 +97,37 @@
 <a href="../../consultation/index.html">상담 안내</a></div></div>
   </div>
 </footer>
-<script src="../../assets/js/main.js"></script></body></html>
+<script src="../../assets/js/main.js"></script>
+<script>
+(function () {
+  var form = document.querySelector('form[action*="formsubmit.co"]');
+  if (!form || form.dataset.redirectFixed === 'true') return;
+  form.dataset.redirectFixed = 'true';
+
+  form.addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    var submitButton = form.querySelector('button[type="submit"], input[type="submit"]');
+    if (submitButton) {
+      submitButton.disabled = true;
+      submitButton.dataset.originalText = submitButton.textContent || submitButton.value || '';
+      if (submitButton.tagName === 'BUTTON') submitButton.textContent = '신청 전송 중...';
+      else submitButton.value = '신청 전송 중...';
+    }
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    })
+    .then(function () {
+      window.location.href = '../thanks/';
+    })
+    .catch(function () {
+      window.location.href = '../thanks/';
+    });
+  });
+})();
+</script>
+
+</body></html>
