@@ -89,70 +89,40 @@ document.addEventListener('click', function(event) {
 
 (function(){
   var reviewForm = document.getElementById('reviewForm');
-  var reviewGrid = document.querySelector('.review-grid');
+  if (!reviewForm) return;
 
-  function maskDisplayName(name){
-    name = (name || '').trim();
-    if (!name) return '';
-    var compact = name.replace(/\s+/g, '');
-    var koreanRealName = /^[가-힣]{2,4}$/.test(compact);
-    if (koreanRealName) {
-      if (compact.length === 2) return compact.charAt(0) + '*';
-      return compact.charAt(0) + '*' + compact.slice(2);
+  reviewForm.addEventListener('submit', async function(event){
+    event.preventDefault();
+
+    var grade = reviewForm.querySelector('[name="학년"]') ? reviewForm.querySelector('[name="학년"]').value : '';
+    var subject = reviewForm.querySelector('[name="과목"]') ? reviewForm.querySelector('[name="과목"]').value : '';
+    var ratingInput = reviewForm.querySelector('input[name="별점"]:checked');
+    var content = reviewForm.querySelector('[name="후기내용"]') ? reviewForm.querySelector('[name="후기내용"]').value.trim() : '';
+
+    if (!grade || !subject || !ratingInput || !content) {
+      alert('학년, 과목, 별점, 후기 내용을 입력해주세요.');
+      return;
     }
-    return name;
-  }
 
-  function ratingNumber(rating){
-    if (rating.indexOf('5점') !== -1) return '5';
-    if (rating.indexOf('4점') !== -1) return '4';
-    if (rating.indexOf('3점') !== -1) return '3';
-    if (rating.indexOf('2점') !== -1) return '2';
-    return '1';
-  }
+    var submitBtn = reviewForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = '전송 중...';
+    }
 
-  if (reviewForm && reviewGrid) {
-    reviewForm.addEventListener('submit', function(event){
-      event.preventDefault();
+    try {
+      var formData = new FormData(reviewForm);
+      await fetch(reviewForm.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+    } catch (err) {
+      // 메일 전송 응답이 불안정해도 사용자는 우리가 만든 완료 페이지로 이동합니다.
+    }
 
-      var rawName = reviewForm.review_name ? reviewForm.review_name.value.trim() : '';
-      var grade = reviewForm.grade ? reviewForm.grade.value : '';
-      var subject = reviewForm.subject ? reviewForm.subject.value : '';
-      var ratingInput = reviewForm.querySelector('input[name="rating"]:checked');
-      var rating = ratingInput ? ratingInput.value : '';
-      var content = reviewForm.content ? reviewForm.content.value.trim() : '';
-
-      if (!grade || !subject || !rating || !content) {
-        alert('학년, 과목, 별점, 후기 내용을 입력해주세요.');
-        return;
-      }
-
-      var author = maskDisplayName(rawName);
-      if (!author) author = grade + '/' + subject;
-
-      var card = document.createElement('article');
-      card.className = 'review-card is-visible review-card-new';
-      card.setAttribute('data-review-page','1');
-      card.innerHTML = '<div class="review-meta"><div><span class="review-author"></span><time class="review-date"></time></div><span class="review-tag"></span><span class="review-card-rating"></span></div><p></p>';
-      card.querySelector('.review-author').textContent = author;
-      card.querySelector('.review-tag').textContent = grade + ' · ' + subject;
-      var ratingBadge = card.querySelector('.review-card-rating');
-      if (ratingBadge) {
-        ratingBadge.textContent = rating.replace(/\s.*$/, '') + ' ' + ratingNumber(rating);
-        ratingBadge.setAttribute('aria-label', '별점 ' + ratingNumber(rating) + '점');
-      }
-
-      var now = new Date();
-      var formattedDate = now.getFullYear() + '.' + String(now.getMonth()+1).padStart(2,'0') + '.' + String(now.getDate()).padStart(2,'0');
-      var timeEl = card.querySelector('.review-date');
-      if (timeEl) { timeEl.textContent = formattedDate; timeEl.setAttribute('datetime', formattedDate.replace(/\./g,'-')); }
-      card.querySelector('p').textContent = content;
-
-      reviewGrid.prepend(card);
-      reviewForm.reset();
-      alert('후기가 등록되었습니다. 현재 페이지에서 바로 확인할 수 있습니다.');
-    });
-  }
+    window.location.href = '../reviews/thanks/';
+  });
 })();
 
 
