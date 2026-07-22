@@ -63,7 +63,7 @@
   <div class="review-form-grid">
     <label>
       <span>공개 이름/닉네임</span>
-      <input type="text" name="공개이름_닉네임" placeholder="예: 중3 학부모, 민서맘, 김수직">
+      <input type="text" name="review_name" placeholder="예: 중3 학부모, 민서맘, 김수직">
       <small class="form-helper">이름을 비워두면 선택한 학년/과목으로 표시됩니다. 실명이 부담되시면 닉네임을 적어주세요.</small>
     </label>
   </div>
@@ -71,7 +71,7 @@
   <div class="review-form-grid review-select-grid">
     <label>
       <span>학년</span>
-      <select name="학년" required>
+      <select name="grade" required>
         <option value="" selected disabled>학년을 선택하세요</option>
         <option value="초등">초등</option>
         <option value="중1">중1</option>
@@ -86,7 +86,7 @@
     </label>
     <label>
       <span>과목</span>
-      <select name="과목" required>
+      <select name="subject" required>
         <option value="" selected disabled>과목을 선택하세요</option>
         <option value="국어">국어</option>
         <option value="영어">영어</option>
@@ -104,15 +104,15 @@
 <div class="review-star-field">
     <span>별점</span>
     <div class="review-star-rating" role="radiogroup" aria-label="별점 선택">
-      <input type="radio" id="review-star-5" name="별점" value="★★★★★ 5점" required>
+      <input type="radio" id="review-star-5" name="rating" value="★★★★★ 5점" required>
       <label for="review-star-5" aria-label="5점">★</label>
-      <input type="radio" id="review-star-4" name="별점" value="★★★★☆ 4점">
+      <input type="radio" id="review-star-4" name="rating" value="★★★★☆ 4점">
       <label for="review-star-4" aria-label="4점">★</label>
-      <input type="radio" id="review-star-3" name="별점" value="★★★☆☆ 3점">
+      <input type="radio" id="review-star-3" name="rating" value="★★★☆☆ 3점">
       <label for="review-star-3" aria-label="3점">★</label>
-      <input type="radio" id="review-star-2" name="별점" value="★★☆☆☆ 2점">
+      <input type="radio" id="review-star-2" name="rating" value="★★☆☆☆ 2점">
       <label for="review-star-2" aria-label="2점">★</label>
-      <input type="radio" id="review-star-1" name="별점" value="★☆☆☆☆ 1점">
+      <input type="radio" id="review-star-1" name="rating" value="★☆☆☆☆ 1점">
       <label for="review-star-1" aria-label="1점">★</label>
     </div>
     <small class="form-helper">별을 눌러 만족도를 선택해주세요.</small>
@@ -120,7 +120,7 @@
 
   <label>
     <span>후기 내용</span>
-    <textarea name="후기내용" rows="5" placeholder="수업 경험이나 상담 만족도를 편하게 남겨주세요." required></textarea>
+    <textarea name="content" rows="5" placeholder="수업 경험이나 상담 만족도를 편하게 남겨주세요." required></textarea>
   </label>
   <div class="review-form-actions"><button class="btn primary" type="submit">후기 전송</button></div>
 </form><div class="review-note">작성한 후기는 메일로 접수되며, 확인 후 후기 페이지에 반영됩니다.</div></div></section><section class="section"><div class="container"><div class="section-title"><div><p class="eyebrow">상담하기</p><h2>편한 방법으로 바로 문의하세요</h2><p>전화, 카톡, 상담신청 중 편한 방법을 선택해주세요.</p></div></div><div class="contact-strip"><article class="contact-card"><h3>전화상담</h3><p>전화로 빠르게 상담을 시작할 수 있습니다.</p><button class="btn phone" onclick="openPhoneConsult()" type="button">전화상담</button></article><article class="contact-card"><h3>카톡상담</h3><p>카카오톡으로 편하게 문의할 수 있습니다.</p><button class="btn kakao" onclick="openKakaoConsult()" type="button">카톡상담</button></article><article class="contact-card"><h3>상담신청</h3><p>신청서를 통해 상담을 남길 수 있습니다.</p><button class="btn primary" onclick="openLanding()" type="button">상담신청</button></article></div></div></section></main><footer class="site-footer">
@@ -133,4 +133,68 @@
 <a href="../consultation/index.html">상담 안내</a></div></div>
   </div>
 </footer>
-<script src="../assets/js/main.js"></script></body></html>
+<script src="../assets/js/main.js"></script>
+<script>
+(function(){
+  var form = document.getElementById('reviewForm');
+  if (!form || form.dataset.safeReviewSubmit === '1') return;
+  form.dataset.safeReviewSubmit = '1';
+
+  form.addEventListener('submit', async function(event){
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    function getValue(name){
+      var el = form.querySelector('[name="' + name + '"]');
+      return el ? (el.value || '').trim() : '';
+    }
+
+    var grade = getValue('grade');
+    var subject = getValue('subject');
+    var rating = form.querySelector('input[name="rating"]:checked');
+    var content = getValue('content');
+
+    if (!grade) {
+      alert('학년을 선택해주세요.');
+      return;
+    }
+    if (!subject) {
+      alert('과목을 선택해주세요.');
+      return;
+    }
+    if (!rating) {
+      alert('별점을 선택해주세요.');
+      return;
+    }
+    if (!content) {
+      alert('후기 내용을 입력해주세요.');
+      return;
+    }
+
+    var btn = form.querySelector('button[type="submit"]');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '전송 중...';
+    }
+
+    try {
+      var formData = new FormData(form);
+      formData.set('공개 이름/닉네임', getValue('review_name') || grade + '/' + subject);
+      formData.set('학년', grade);
+      formData.set('과목', subject);
+      formData.set('별점', rating.value);
+      formData.set('후기 내용', content);
+
+      await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: { 'Accept': 'application/json' }
+      });
+    } catch (err) {
+      // 전송 응답이 불안정해도 사용자는 완료 페이지로 이동합니다.
+    }
+
+    window.location.href = './thanks/';
+  }, true);
+})();
+</script></body></html>
