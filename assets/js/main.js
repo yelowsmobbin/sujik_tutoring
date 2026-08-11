@@ -74,12 +74,58 @@ document.addEventListener('click', function(event) {
     var link = event.target.closest('a[href]');
     if (!link) return;
     var href = link.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:') || link.target === '_blank' || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    if (!href || href.startsWith('mailto:') || href.startsWith('tel:') || link.target === '_blank' || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+    // 같은 페이지의 해시 링크(#reviewForm 등)는 페이지를 숨기지 않고 바로 이동합니다.
+    var targetUrl;
+    try {
+      targetUrl = new URL(href, window.location.href);
+    } catch (e) {
+      return;
+    }
+
+    var samePage =
+      targetUrl.origin === window.location.origin &&
+      targetUrl.pathname === window.location.pathname &&
+      targetUrl.search === window.location.search;
+
+    if (samePage && targetUrl.hash) {
+      var target = document.getElementById(decodeURIComponent(targetUrl.hash.slice(1)));
+      if (target) {
+        event.preventDefault();
+        document.body.classList.remove('is-leaving');
+        document.body.classList.add('is-ready');
+        history.pushState(null, '', targetUrl.hash);
+        target.scrollIntoView({behavior:'smooth', block:'start'});
+      }
+      return;
+    }
+
+    if (href.startsWith('http')) return;
     if (href.endsWith('.xml') || href.endsWith('.txt')) return;
     event.preventDefault();
     document.body.classList.add('is-leaving');
     setTimeout(function(){ window.location.href = href; }, 110);
   });
+
+  // #reviewForm 주소로 직접 진입했을 때도 렌더링 완료 후 정확히 이동합니다.
+  function scrollToInitialHash(){
+    if (!window.location.hash) return;
+    var target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+    if (!target) return;
+    document.body.classList.remove('is-leaving');
+    document.body.classList.add('is-ready');
+    setTimeout(function(){
+      target.scrollIntoView({behavior:'auto', block:'start'});
+    }, 0);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scrollToInitialHash);
+  } else {
+    scrollToInitialHash();
+  }
+  window.addEventListener('pageshow', scrollToInitialHash);
 })();
 
 
